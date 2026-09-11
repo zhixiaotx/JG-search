@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Google 极速搜索" />
+  <title>Google Search</title>
+  <style type="text/css">
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      text-align: center;
+      font-size: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background-color: #ffffff;
+      color: #202124;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .logo-container {
+      margin-bottom: 28px;
+    }
+    .google-logo {
+      width: 272px;
+      height: 92px;
+      display: block;
+      margin: 0 auto;
+    }
+    .search-box {
+      width: 100%;
+      max-width: 620px;
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border: 1px solid #dfe1e5;
+      box-shadow: 0 1px 6px rgba(32,33,36,0.12);
+      border-radius: 24px;
+      padding: 8px 16px;
+      transition: all 0.2s ease-in-out;
+    }
+    .search-box:hover, .search-box:focus-within {
+      box-shadow: 0 2px 10px rgba(32,33,36,0.18);
+      border-color: rgba(223,225,229,0);
+    }
+    .search-icon {
+      width: 20px;
+      height: 20px;
+      fill: #9aa0a6;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+    .search-input {
+      flex: 1;
+      height: 34px;
+      border: none;
+      outline: none;
+      font-size: 16px;
+      color: #202124;
+      background: transparent;
+    }
+    .clear-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: #70757a;
+      cursor: pointer;
+      padding: 4px;
+      font-size: 18px;
+      line-height: 1;
+    }
+    .clear-btn.show {
+      display: block;
+    }
+    .buttons {
+      margin-top: 24px;
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+    .btn {
+      background-color: #f8f9fa;
+      border: 1px solid #f8f9fa;
+      border-radius: 6px;
+      color: #3c4043;
+      font-size: 14px;
+      padding: 9px 18px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+    .btn:hover {
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      background-color: #f1f3f4;
+      border-color: #dadce0;
+      color: #202124;
+    }
+    .hint {
+      margin-top: 28px;
+      font-size: 13px;
+      color: #70757a;
+    }
+    .hint a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    .hint a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="logo-container">
+    <svg class="google-logo" viewBox="0 0 272 92" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#EA4335" d="M115.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18C71.25 34.32 81.24 25 93.5 25s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44S80.99 39.2 80.99 47.18c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z"/>
+      <path fill="#FBBC05" d="M163.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18c0-12.85 9.99-22.18 22.25-22.18s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44s-12.51 5.46-12.51 13.44c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z"/>
+      <path fill="#4285F4" d="M209.75 26.34v39.82c0 16.38-9.66 23.07-21.08 23.07-10.75 0-17.22-7.19-19.66-13.07l8.48-3.53c1.51 3.61 5.21 7.87 11.17 7.87 7.31 0 11.84-4.51 11.84-13v-3.19h-.34c-2.18 2.69-6.38 5.04-11.68 5.04-11.09 0-21.25-9.66-21.25-22.09 0-12.52 10.16-22.26 21.25-22.26 5.29 0 9.49 2.35 11.68 4.96h.34v-3.62h9.25zm-8.56 21.08c0-7.81-5.21-13.44-11.93-13.44-6.8 0-12.51 5.63-12.51 13.44 0 7.72 5.71 13.35 12.51 13.35 6.72 0 11.93-5.63 11.93-13.35z"/>
+      <path fill="#34A853" d="M225 3v65h-9.5V3h9.5z"/>
+      <path fill="#EA4335" d="M262.02 54.48l7.56 5.04c-2.44 3.61-8.32 9.83-18.48 9.83-12.6 0-22.01-9.74-22.01-22.18 0-13.19 9.49-22.18 20.92-22.18 11.51 0 17.14 9.16 18.98 14.11l1.01 2.52-29.65 12.28c2.27 4.45 5.8 6.72 10.75 6.72 4.96 0 8.4-2.44 10.92-6.14zm-23.27-7.98l19.82-8.23c-1.09-2.77-4.37-4.7-8.23-4.7-4.95 0-11.84 4.37-11.59 12.93z"/>
+      <path fill="#4285F4" d="M35.29 41.41V32H67.8c.31 1.64.47 3.58.47 5.68 0 7.06-1.93 15.79-8.15 22.01-6.05 6.3-13.78 9.66-24.83 9.66C16.05 69.35 0 53.81 0 34.68S16.05 0 35.29 0c10.58 0 18.23 4.12 23.86 9.49l-6.72 6.72C48.35 12.18 42.89 9.32 35.29 9.32c-14 0-24.95 11.34-24.95 25.36 0 14.03 10.95 25.37 24.95 25.37 9.07 0 14.2-3.61 17.56-6.97 1.85-1.85 3.02-4.45 3.44-8.07H35.29z"/>
+    </svg>
+  </div>
+
+  <form class="search-box" id="searchForm" onsubmit="event.preventDefault(); doGoogleSearch();">
+    <svg class="search-icon" focusable="false" viewBox="0 0 24 24">
+      <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+    </svg>
+    <input
+      type="text"
+      class="search-input"
+      id="queryInput"
+      placeholder="在 Google 中搜索，或者输入网址"
+      autocomplete="off"
+      autofocus
+    />
+    <button type="button" class="clear-btn" id="clearBtn" onclick="clearInput()">✕</button>
+  </form>
+
+  <div class="buttons">
+    <button class="btn" onclick="doGoogleSearch()">Google 搜索</button>
+    <button class="btn" onclick="feelingLucky()">手气不错</button>
+  </div>
+
+  <div class="hint">
+    极光快搜 · 纯净无广告原生体验
+  </div>
+
+  <script type="text/javascript">
+    const queryInput = document.getElementById('queryInput');
+    const clearBtn = document.getElementById('clearBtn');
+
+    queryInput.addEventListener('input', function() {
+      if (this.value) {
+        clearBtn.classList.add('show');
+      } else {
+        clearBtn.classList.remove('show');
+      }
+    });
+
+    function clearInput() {
+      queryInput.value = '';
+      clearBtn.classList.remove('show');
+      queryInput.focus();
+    }
+
+    function doGoogleSearch() {
+      const q = queryInput.value.trim();
+      if (!q) {
+        queryInput.focus();
+        return;
+      }
+      window.open('https://www.google.com/search?q=' + encodeURIComponent(q), '_blank');
+    }
+
+    function feelingLucky() {
+      const q = queryInput.value.trim();
+      if (!q) {
+        window.open('https://www.google.com/doodles', '_blank');
+        return;
+      }
+      window.open('https://www.google.com/search?btnI=I&q=' + encodeURIComponent(q), '_blank');
+    }
+
+    // 支持 URL 参数回填与聚焦
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const q = urlParams.get('q') || urlParams.get('wd');
+      if (q) {
+        queryInput.value = q;
+        clearBtn.classList.add('show');
+      }
+      queryInput.focus();
+    });
+  </script>
+</body>
+</html>
