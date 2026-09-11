@@ -104,7 +104,7 @@ export default function App() {
   } | null>(() => ({
     engine: DEFAULT_SEARCH_ENGINES[1] || DEFAULT_SEARCH_ENGINES[0],
     query: '',
-    url: '/iGoogle.html',
+    url: './iGoogle.html',
   }));
 
   const [iframeKey, setIframeKey] = useState<number>(0);
@@ -223,11 +223,11 @@ export default function App() {
     let externalUrl = targetUrl;
 
     if (targetEngine.id === 'chatgpt') {
-      targetUrl = `/chatgpt.html?q=${encodeURIComponent(targetQuery)}`;
+      targetUrl = `./chatgpt.html?q=${encodeURIComponent(targetQuery)}`;
       externalUrl = `https://chatgpt.com/?q=${encodeURIComponent(targetQuery)}&hints=search`;
     } else if (targetEngine.id === 'google' && searchMode === 'embed') {
       // In embed mode, iGoogle provides clean search experience
-      targetUrl = `/iGoogle.html?q=${encodeURIComponent(targetQuery)}`;
+      targetUrl = `./iGoogle.html?q=${encodeURIComponent(targetQuery)}`;
     }
 
     // Always display on the right in the embedded page viewport
@@ -251,9 +251,9 @@ export default function App() {
     if (query.trim() && targetUrl.includes('%s')) {
       targetUrl = targetUrl.replace('%s', encodeURIComponent(query.trim()));
     } else if (targetUrl.includes('%s')) {
-      if (engine.id === 'google') targetUrl = '/iGoogle.html';
-      else if (engine.id === 'baidu') targetUrl = '/diybaidu.html';
-      else if (engine.id === 'chatgpt') targetUrl = '/chatgpt.html';
+      if (engine.id === 'google') targetUrl = './iGoogle.html';
+      else if (engine.id === 'baidu') targetUrl = './diybaidu.html';
+      else if (engine.id === 'chatgpt') targetUrl = './chatgpt.html';
       else targetUrl = targetUrl.replace(/[\?&]?[a-zA-Z_]+=%s/, '').replace('%s', '');
     }
 
@@ -314,9 +314,9 @@ export default function App() {
     if (query.trim() && targetUrl.includes('%s')) {
       targetUrl = targetUrl.replace('%s', encodeURIComponent(query.trim()));
     } else if (targetUrl.includes('%s')) {
-      if (targetEngine.id === 'google') targetUrl = '/iGoogle.html';
-      else if (targetEngine.id === 'baidu') targetUrl = '/diybaidu.html';
-      else if (targetEngine.id === 'chatgpt') targetUrl = '/chatgpt.html';
+      if (targetEngine.id === 'google') targetUrl = './iGoogle.html';
+      else if (targetEngine.id === 'baidu') targetUrl = './diybaidu.html';
+      else if (targetEngine.id === 'chatgpt') targetUrl = './chatgpt.html';
       else targetUrl = targetUrl.replace(/[\?&]?[a-zA-Z_]+=%s/, '').replace('%s', '');
     }
 

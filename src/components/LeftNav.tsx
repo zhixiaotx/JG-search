@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { SearchEngine } from '../types';
 import { ChevronDown, ChevronRight, Compass } from 'lucide-react';
 
 interface LeftNavProps {
@@ -71,6 +70,110 @@ const DIRECT_SEARCH_MAP: Record<string, { url: string; name: string }> = {
   sogoumap: { url: 'https://map.sogou.com', name: '搜狗地图' },
 };
 
+interface ItemMeta {
+  domain?: string;
+  iconSrc?: string;
+  color: string;
+  fallbackText: string;
+}
+
+// Metadata for high-res favicons and robust fallbacks
+const ITEM_META: Record<string, ItemMeta> = {
+  google: { domain: 'google.com', iconSrc: './images/google.ico', color: '#4285F4', fallbackText: 'G' },
+  baidu: { domain: 'baidu.com', iconSrc: './images/baidu.ico', color: '#2932E1', fallbackText: '百' },
+  chatgpt: { domain: 'chatgpt.com', iconSrc: './images/ChatGPTicon.svg', color: '#10A37F', fallbackText: 'AI' },
+  kimi: { domain: 'moonshot.cn', color: '#1B64F2', fallbackText: 'K' },
+  yuanbao: { domain: 'tencent.com', iconSrc: 'https://cdn-bot.hunyuan.tencent.com/logo-v2.png', color: '#0052D9', fallbackText: '元' },
+  doubao: { domain: 'doubao.com', color: '#3370FF', fallbackText: '豆' },
+  bochaai: { domain: 'bochaai.com', color: '#6366F1', fallbackText: '博' },
+  wikipedia: { domain: 'wikipedia.org', color: '#333333', fallbackText: 'W' },
+  gooleimage: { domain: 'google.com', iconSrc: './images/google.ico', color: '#4285F4', fallbackText: 'G' },
+  tineye: { domain: 'tineye.com', color: '#2274A5', fallbackText: 'T' },
+  yandex: { domain: 'yandex.com', color: '#FC3F1D', fallbackText: 'Y' },
+  baidushitu: { domain: 'baidu.com', iconSrc: './images/baidu.ico', color: '#2932E1', fallbackText: '图' },
+  visualsearch: { domain: 'bing.com', color: '#008373', fallbackText: 'B' },
+  google_advanced: { domain: 'google.com', iconSrc: './images/google.ico', color: '#4285F4', fallbackText: 'G' },
+  baidu_advanced: { domain: 'baidu.com', iconSrc: './images/baidu.ico', color: '#2932E1', fallbackText: '百' },
+  sogou_advanced: { domain: 'sogou.com', color: '#FF5900', fallbackText: '搜' },
+  xiaohongshu: { domain: 'xiaohongshu.com', color: '#FF2442', fallbackText: '红' },
+  weibo: { domain: 'weibo.com', color: '#E6162D', fallbackText: '微' },
+  wechat: { domain: 'weixin.qq.com', color: '#07C160', fallbackText: '信' },
+  zhihu: { domain: 'zhihu.com', color: '#0084FF', fallbackText: '知' },
+  douban: { domain: 'douban.com', color: '#007722', fallbackText: '豆' },
+  music: { domain: 'music.163.com', color: '#C20C0C', fallbackText: '音' },
+  map: { domain: 'amap.com', color: '#0091FF', fallbackText: '图' },
+  amap: { domain: 'amap.com', color: '#0091FF', fallbackText: '高' },
+  baidumap: { domain: 'map.baidu.com', iconSrc: './images/baidu.ico', color: '#2932E1', fallbackText: '百' },
+  googlemap: { domain: 'google.com', iconSrc: './images/google.ico', color: '#4285F4', fallbackText: 'G' },
+  tencentmap: { domain: 'map.qq.com', color: '#2E75D3', fallbackText: '腾' },
+  sogoumap: { domain: 'map.sogou.com', color: '#FF5900', fallbackText: '搜' },
+  panso: { domain: 'funletu.com', iconSrc: 'https://pan.funletu.com/favicon.svg', color: '#00B4D8', fallbackText: '盘' },
+  hunhepan: { domain: 'hunhepan.com', iconSrc: 'https://hunhepan.com/favicon-32x32.png', color: '#4F46E5', fallbackText: '俱' },
+  cupfox: { domain: 'ssgo.app', color: '#F59E0B', fallbackText: '云' },
+  jiumodiary: { domain: 'jiumodiary.com', color: '#10B981', fallbackText: '鸠' },
+  soman: { domain: 'animedb.cn', color: '#EC4899', fallbackText: '漫' },
+  future: { domain: 'thefuture.top', color: '#8B5CF6', fallbackText: '未' },
+  capub: { domain: 'capub.cn', color: '#64748B', fallbackText: '书' },
+  shidianguji: { domain: 'shidianguji.com', color: '#854D0E', fallbackText: '识' },
+  zdic: { domain: 'zdic.net', color: '#991B1B', fallbackText: '汉' },
+  iptv: { domain: 'iptv-org.github.io', color: '#0284C7', fallbackText: 'TV' },
+  law: { domain: 'npc.gov.cn', color: '#DC2626', fallbackText: '法' },
+  qichacha: { domain: 'tianyancha.com', color: '#2563EB', fallbackText: '企' },
+  similarsites: { domain: 'similarsites.com', color: '#0D9488', fallbackText: '同' },
+  github: { domain: 'github.com', color: '#24292E', fallbackText: 'Git' },
+  open: { domain: 'openhub.net', color: '#16A34A', fallbackText: '开' },
+  wolf: { domain: 'wolframalpha.com', color: '#FF7F00', fallbackText: 'W' },
+  index: { domain: 'google.com', iconSrc: './images/google.ico', color: '#4285F4', fallbackText: '索' },
+  kuaidi: { domain: 'kuaidi100.com', color: '#EA580C', fallbackText: '递' },
+  gepu: { domain: 'zhaogepu.com', color: '#7C3AED', fallbackText: '谱' },
+  bilibili: { domain: 'bilibili.com', color: '#00AEEC', fallbackText: 'B' },
+  emoji: { domain: 'searchemoji.app', color: '#FBBF24', fallbackText: '😊' },
+  vectorlogo: { domain: 'worldvectorlogo.com', color: '#3B82F6', fallbackText: 'V' },
+  font: { domain: 'likefont.com', color: '#6366F1', fallbackText: '字' },
+  visualhunt: { domain: 'visualhunt.com', color: '#14B8A6', fallbackText: '视' },
+  mba: { domain: 'mbalib.com', color: '#1E40AF', fallbackText: '智' },
+  makedie: { domain: 'assrt.net', color: '#475569', fallbackText: '字' },
+  plantplus: { domain: 'plantplus.cn', iconSrc: 'https://www.plantplus.cn/cn/images/favicon.ico', color: '#15803D', fallbackText: '植' },
+  innojoy: { domain: 'innojoy.com', color: '#0369A1', fallbackText: '专' },
+  searchbyimage: { domain: 'yandex.com', color: '#FC3F1D', fallbackText: '图' },
+};
+
+// Resilient Logo Icon Component with graceful degradation
+const NavIcon: React.FC<{ id: string; name: string; iconSrc?: string }> = ({ id, name, iconSrc }) => {
+  const [loadFailed, setLoadFailed] = useState(false);
+  const meta: ItemMeta = ITEM_META[id] || { color: '#3b82f6', fallbackText: name.slice(0, 1) };
+
+  // Calculate icon source:
+  // 1. Explicit iconSrc (e.g. relative path ./images/...)
+  // 2. Meta defined iconSrc
+  // 3. Google Favicon CDN based on domain
+  const targetSrc =
+    iconSrc ||
+    meta.iconSrc ||
+    (meta.domain ? `https://www.google.com/s2/favicons?domain=${meta.domain}&sz=32` : undefined);
+
+  if (loadFailed || !targetSrc) {
+    return (
+      <span
+        className="w-4 h-4 rounded-xs shrink-0 mr-2 flex items-center justify-center text-[10px] font-bold text-white leading-none shadow-2xs select-none"
+        style={{ backgroundColor: meta.color || '#3b82f6' }}
+      >
+        {meta.fallbackText || name.slice(0, 1)}
+      </span>
+    );
+  }
+
+  return (
+    <img
+      src={targetSrc}
+      alt={name}
+      loading="lazy"
+      onError={() => setLoadFailed(true)}
+      className="w-4 h-4 mr-2 object-contain shrink-0 rounded-xs"
+    />
+  );
+};
+
 export const LeftNav: React.FC<LeftNavProps> = ({
   activeEngineId,
   onSelectEngineById,
@@ -119,12 +222,7 @@ export const LeftNav: React.FC<LeftNavProps> = ({
     onSelectEngineById(id, targetUrl);
 
     // Immediately open the page in the right-hand preview
-    onSearchWithUrl(targetUrl, title, false);
-  };
-
-  const handleImgError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    e.currentTarget.src =
-      'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%233b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
+    onSearchWithUrl(targetUrl, title, isBlank);
   };
 
   return (
@@ -143,28 +241,28 @@ export const LeftNav: React.FC<LeftNavProps> = ({
         <li
           id="google"
           className={activeEngineId === 'google' ? 'active' : ''}
-          onClick={(e) => handleItemClick('google', '/iGoogle.html', 'Google', false, e)}
+          onClick={(e) => handleItemClick('google', './iGoogle.html', 'Google', false, e)}
         >
-          <img src="/images/google.ico" alt="Google" onError={handleImgError} />
-          <a data="/iGoogle.html">Google</a>
+          <NavIcon id="google" name="Google" iconSrc="./images/google.ico" />
+          <a data="./iGoogle.html">Google</a>
         </li>
 
         <li
           id="baidu"
           className={activeEngineId === 'baidu' ? 'active' : ''}
-          onClick={(e) => handleItemClick('baidu', '/diybaidu.html', '百度', false, e)}
+          onClick={(e) => handleItemClick('baidu', './diybaidu.html', '百度', false, e)}
         >
-          <img src="/images/baidu.ico" alt="百度" onError={handleImgError} />
-          <a data="/diybaidu.html">百度</a>
+          <NavIcon id="baidu" name="百度" iconSrc="./images/baidu.ico" />
+          <a data="./diybaidu.html">百度</a>
         </li>
 
         <li
           id="chatgpt"
           className={activeEngineId === 'chatgpt' ? 'active' : ''}
-          onClick={(e) => handleItemClick('chatgpt', '/chatgpt.html', 'ChatGPT', false, e)}
+          onClick={(e) => handleItemClick('chatgpt', './chatgpt.html', 'ChatGPT', false, e)}
         >
-          <img src="/images/ChatGPTicon.svg" alt="ChatGPT" onError={handleImgError} />
-          <a data="/chatgpt.html">ChatGPT</a>
+          <NavIcon id="chatgpt" name="ChatGPT" iconSrc="./images/ChatGPTicon.svg" />
+          <a data="./chatgpt.html">ChatGPT</a>
         </li>
 
         <li
@@ -172,7 +270,7 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           className={activeEngineId === 'kimi' ? 'active' : ''}
           onClick={(e) => handleItemClick('kimi', 'https://kimi.moonshot.cn/', 'Kimi', false, e)}
         >
-          <img src="/images/kimi.ico" alt="Kimi" onError={handleImgError} />
+          <NavIcon id="kimi" name="Kimi" />
           <a data="https://kimi.moonshot.cn/">Kimi</a>
         </li>
 
@@ -181,7 +279,7 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           className={activeEngineId === 'yuanbao' ? 'active' : ''}
           onClick={(e) => handleItemClick('yuanbao', 'https://yuanbao.tencent.com/', '元宝', false, e)}
         >
-          <img src="https://cdn-bot.hunyuan.tencent.com/logo-v2.png" alt="元宝" onError={handleImgError} />
+          <NavIcon id="yuanbao" name="元宝" iconSrc="https://cdn-bot.hunyuan.tencent.com/logo-v2.png" />
           <a data="https://yuanbao.tencent.com/">元宝</a>
         </li>
 
@@ -190,7 +288,7 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           className={activeEngineId === 'doubao' ? 'active' : ''}
           onClick={(e) => handleItemClick('doubao', 'https://www.doubao.com/chat/search', '豆包', true, e)}
         >
-          <img src="/images/doubao.png" alt="豆包" onError={handleImgError} />
+          <NavIcon id="doubao" name="豆包" />
           <a data="https://www.doubao.com/chat/search" target="_blank" rel="noreferrer">
             豆包
           </a>
@@ -201,17 +299,17 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           className={activeEngineId === 'bochaai' ? 'active' : ''}
           onClick={(e) => handleItemClick('bochaai', 'https://bochaai.com/', '博查', false, e)}
         >
-          <img src="/images/bochaai.png" alt="博查" onError={handleImgError} />
+          <NavIcon id="bochaai" name="博查" />
           <a data="https://bochaai.com/">博查</a>
         </li>
 
         <li
           id="wikipedia"
           className={activeEngineId === 'wikipedia' ? 'active' : ''}
-          onClick={(e) => handleItemClick('wikipedia', 'https://search.chongbuluo.com/wiki.html', 'Wikipedia', false, e)}
+          onClick={(e) => handleItemClick('wikipedia', 'https://zh.wikipedia.org/', 'Wikipedia', false, e)}
         >
-          <img src="/images/wikipedia.ico" alt="Wikipedia" onError={handleImgError} />
-          <a data="https://search.chongbuluo.com/wiki.html">Wikipedia</a>
+          <NavIcon id="wikipedia" name="Wikipedia" />
+          <a data="https://zh.wikipedia.org/">Wikipedia</a>
         </li>
 
         {/* 以图搜图 with Submenu */}
@@ -226,7 +324,7 @@ export const LeftNav: React.FC<LeftNavProps> = ({
             onClick={(e) => toggleSubmenu('searchbyimage', e)}
           >
             <div className="flex items-center text-left flex-1 min-w-0">
-              <img src="/images/yandex.ico" alt="以图搜图" onError={handleImgError} />
+              <NavIcon id="searchbyimage" name="以图搜图" />
               <a className="text-left truncate">以图搜图</a>
             </div>
             {expandedMenus.searchbyimage ? (
@@ -241,7 +339,7 @@ export const LeftNav: React.FC<LeftNavProps> = ({
                 id="gooleimage"
                 onClick={(e) => handleItemClick('gooleimage', 'https://www.google.com/imghp', 'Google images', true, e)}
               >
-                <img src="/images/google.ico" alt="Google images" onError={handleImgError} />
+                <NavIcon id="gooleimage" name="Google images" iconSrc="./images/google.ico" />
                 <a data="https://www.google.com/imghp" target="_blank" rel="noreferrer">
                   Google images
                 </a>
@@ -250,14 +348,14 @@ export const LeftNav: React.FC<LeftNavProps> = ({
                 id="tineye"
                 onClick={(e) => handleItemClick('tineye', 'https://tineye.com/', 'TinEye', false, e)}
               >
-                <img src="/images/tineye.ico" alt="TinEye" onError={handleImgError} />
+                <NavIcon id="tineye" name="TinEye" />
                 <a data="https://tineye.com/">TinEye</a>
               </li>
               <li
                 id="yandex"
                 onClick={(e) => handleItemClick('yandex', 'https://yandex.com/images/', 'Yandex images', true, e)}
               >
-                <img src="/images/yandex.ico" alt="Yandex images" onError={handleImgError} />
+                <NavIcon id="yandex" name="Yandex images" />
                 <a data="https://yandex.com/images/" target="_blank" rel="noreferrer">
                   Yandex images
                 </a>
@@ -266,14 +364,14 @@ export const LeftNav: React.FC<LeftNavProps> = ({
                 id="baidushitu"
                 onClick={(e) => handleItemClick('baidushitu', 'https://image.baidu.com/?fr=shitu', '百度识图', false, e)}
               >
-                <img src="/images/baidu.ico" alt="百度识图" onError={handleImgError} />
+                <NavIcon id="baidushitu" name="百度识图" iconSrc="./images/baidu.ico" />
                 <a data="https://image.baidu.com/?fr=shitu">百度识图</a>
               </li>
               <li
                 id="visualsearch"
                 onClick={(e) => handleItemClick('visualsearch', 'https://www.bing.com/visualsearch', '必应视觉搜索', false, e)}
               >
-                <img src="/images/bing.ico" alt="必应视觉搜索" onError={handleImgError} />
+                <NavIcon id="visualsearch" name="必应视觉搜索" />
                 <a data="https://www.bing.com/visualsearch">必应视觉搜索</a>
               </li>
             </ul>
@@ -282,35 +380,35 @@ export const LeftNav: React.FC<LeftNavProps> = ({
 
         <li
           id="google_advanced"
-          onClick={(e) => handleItemClick('google_advanced', 'https://search.chongbuluo.com/advanced_search.html', '谷歌高级', false, e)}
+          onClick={(e) => handleItemClick('google_advanced', 'https://www.google.com/advanced_search', '谷歌高级', false, e)}
         >
-          <img src="/images/google.ico" alt="谷歌高级" onError={handleImgError} />
-          <a data="https://search.chongbuluo.com/advanced_search.html">谷歌高级</a>
+          <NavIcon id="google_advanced" name="谷歌高级" iconSrc="./images/google.ico" />
+          <a data="https://www.google.com/advanced_search">谷歌高级</a>
         </li>
 
         <li
           id="baidu_advanced"
-          onClick={(e) => handleItemClick('baidu_advanced', 'https://search.chongbuluo.com/baidu_advanced.html', '百度高级', false, e)}
+          onClick={(e) => handleItemClick('baidu_advanced', 'https://www.baidu.com/gaoji/advanced.html', '百度高级', false, e)}
         >
-          <img src="/images/baidu.ico" alt="百度高级" onError={handleImgError} />
-          <a data="https://search.chongbuluo.com/baidu_advanced.html">百度高级</a>
+          <NavIcon id="baidu_advanced" name="百度高级" iconSrc="./images/baidu.ico" />
+          <a data="https://www.baidu.com/gaoji/advanced.html">百度高级</a>
         </li>
 
         <li
           id="sogou_advanced"
-          onClick={(e) => handleItemClick('sogou_advanced', 'https://search.chongbuluo.com/sogou_advanced.html', '搜狗高级', false, e)}
+          onClick={(e) => handleItemClick('sogou_advanced', 'https://www.sogou.com/advanced/advanced.html', '搜狗高级', false, e)}
         >
-          <img src="/images/sogou.ico" alt="搜狗高级" onError={handleImgError} />
-          <a data="https://search.chongbuluo.com/sogou_advanced.html">搜狗高级</a>
+          <NavIcon id="sogou_advanced" name="搜狗高级" />
+          <a data="https://www.sogou.com/advanced/advanced.html">搜狗高级</a>
         </li>
 
         <li
           id="xiaohongshu"
           className={activeEngineId === 'xiaohongshu' ? 'active' : ''}
-          onClick={(e) => handleItemClick('xiaohongshu', 'https://search.chongbuluo.com/xhs.html', '小红书搜索', false, e)}
+          onClick={(e) => handleItemClick('xiaohongshu', 'https://www.xiaohongshu.com/explore', '小红书搜索', false, e)}
         >
-          <img src="/images/xiaohongshu.ico" alt="小红书搜索" onError={handleImgError} />
-          <a data="https://search.chongbuluo.com/xhs.html">小红书搜索</a>
+          <NavIcon id="xiaohongshu" name="小红书搜索" />
+          <a data="https://www.xiaohongshu.com/explore">小红书搜索</a>
         </li>
 
         <li
@@ -318,44 +416,44 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           className={activeEngineId === 'weibo' ? 'active' : ''}
           onClick={(e) => handleItemClick('weibo', 'https://s.weibo.com/', '微博搜索', false, e)}
         >
-          <img src="/images/weibo.ico" alt="微博搜索" onError={handleImgError} />
+          <NavIcon id="weibo" name="微博搜索" />
           <a data="https://s.weibo.com/">微博搜索</a>
         </li>
 
         <li
           id="wechat"
           className={activeEngineId === 'wechat' ? 'active' : ''}
-          onClick={(e) => handleItemClick('wechat', 'https://search.chongbuluo.com/weixin.html', '搜狗微信', false, e)}
+          onClick={(e) => handleItemClick('wechat', 'https://weixin.sogou.com/', '搜狗微信', false, e)}
         >
-          <img src="/images/weixin.ico" alt="搜狗微信" onError={handleImgError} />
-          <a data="https://search.chongbuluo.com/weixin.html">搜狗微信</a>
+          <NavIcon id="wechat" name="搜狗微信" />
+          <a data="https://weixin.sogou.com/">搜狗微信</a>
         </li>
 
         <li
           id="zhihu"
           className={activeEngineId === 'zhihu' ? 'active' : ''}
-          onClick={(e) => handleItemClick('zhihu', 'https://zhihu.sogou.com/', '搜狗知乎', false, e)}
+          onClick={(e) => handleItemClick('zhihu', 'https://www.zhihu.com/explore', '知乎探索', false, e)}
         >
-          <img src="/images/zhihu.ico" alt="搜狗知乎" onError={handleImgError} />
-          <a data="https://zhihu.sogou.com/">搜狗知乎</a>
+          <NavIcon id="zhihu" name="知乎探索" />
+          <a data="https://www.zhihu.com/explore">知乎探索</a>
         </li>
 
         <li
           id="douban"
           className={activeEngineId === 'douban' ? 'active' : ''}
-          onClick={(e) => handleItemClick('douban', 'https://search.chongbuluo.com/douban.html', '豆瓣搜索', false, e)}
+          onClick={(e) => handleItemClick('douban', 'https://www.douban.com/', '豆瓣搜索', false, e)}
         >
-          <img src="/images/douban.ico" alt="豆瓣搜索" onError={handleImgError} />
-          <a data="https://search.chongbuluo.com/douban.html">豆瓣搜索</a>
+          <NavIcon id="douban" name="豆瓣搜索" />
+          <a data="https://www.douban.com/">豆瓣搜索</a>
         </li>
 
         <li
           id="music"
           className={activeEngineId === 'music' ? 'active' : ''}
-          onClick={(e) => handleItemClick('music', 'https://search.chongbuluo.com/music.html', '音乐', false, e)}
+          onClick={(e) => handleItemClick('music', 'https://music.163.com/', '音乐', false, e)}
         >
-          <img src="/images/music.png" alt="音乐" onError={handleImgError} />
-          <a data="https://search.chongbuluo.com/music.html">音乐</a>
+          <NavIcon id="music" name="音乐" />
+          <a data="https://music.163.com/">音乐</a>
         </li>
 
         {/* Map with Submenu */}
@@ -370,7 +468,7 @@ export const LeftNav: React.FC<LeftNavProps> = ({
             onClick={(e) => toggleSubmenu('map', e)}
           >
             <div className="flex items-center text-left flex-1 min-w-0">
-              <img src="/images/map.ico" alt="Map" onError={handleImgError} />
+              <NavIcon id="map" name="Map" />
               <a className="text-left truncate">Map</a>
             </div>
             {expandedMenus.map ? (
@@ -385,21 +483,21 @@ export const LeftNav: React.FC<LeftNavProps> = ({
                 id="amap"
                 onClick={(e) => handleItemClick('amap', 'https://ditu.amap.com/', '高德地图', false, e)}
               >
-                <img src="/images/amap.jpg" alt="高德地图" onError={handleImgError} />
+                <NavIcon id="amap" name="高德地图" />
                 <a data="https://ditu.amap.com/">高德地图</a>
               </li>
               <li
                 id="baidumap"
                 onClick={(e) => handleItemClick('baidumap', 'https://map.baidu.com/', '百度地图', false, e)}
               >
-                <img src="/images/baidu.ico" alt="百度地图" onError={handleImgError} />
+                <NavIcon id="baidumap" name="百度地图" iconSrc="./images/baidu.ico" />
                 <a data="https://map.baidu.com/">百度地图</a>
               </li>
               <li
                 id="googlemap"
                 onClick={(e) => handleItemClick('googlemap', 'https://www.google.com/maps/', '谷歌地图', true, e)}
               >
-                <img src="/images/googlemap.ico" alt="谷歌地图" onError={handleImgError} />
+                <NavIcon id="googlemap" name="谷歌地图" iconSrc="./images/google.ico" />
                 <a data="https://www.google.com/maps/" target="_blank" rel="noreferrer">
                   谷歌地图
                 </a>
@@ -408,14 +506,14 @@ export const LeftNav: React.FC<LeftNavProps> = ({
                 id="tencentmap"
                 onClick={(e) => handleItemClick('tencentmap', 'https://map.qq.com/', '腾讯地图', false, e)}
               >
-                <img src="/images/tencentmap.ico" alt="腾讯地图" onError={handleImgError} />
+                <NavIcon id="tencentmap" name="腾讯地图" />
                 <a data="https://map.qq.com/">腾讯地图</a>
               </li>
               <li
                 id="sogoumap"
                 onClick={(e) => handleItemClick('sogoumap', 'https://map.sogou.com', '搜狗地图', false, e)}
               >
-                <img src="/images/sogou.ico" alt="搜狗地图" onError={handleImgError} />
+                <NavIcon id="sogoumap" name="搜狗地图" />
                 <a data="https://map.sogou.com">搜狗地图</a>
               </li>
             </ul>
@@ -427,7 +525,7 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           className={activeEngineId === 'panso' ? 'active' : ''}
           onClick={(e) => handleItemClick('panso', 'https://pan.funletu.com/', '趣盘搜', false, e)}
         >
-          <img src="https://pan.funletu.com/favicon.svg" alt="趣盘搜" onError={handleImgError} />
+          <NavIcon id="panso" name="趣盘搜" iconSrc="https://pan.funletu.com/favicon.svg" />
           <a data="https://pan.funletu.com/">趣盘搜</a>
         </li>
 
@@ -435,7 +533,7 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           id="hunhepan"
           onClick={(e) => handleItemClick('hunhepan', 'https://pan.club/', '网盘俱乐部', false, e)}
         >
-          <img src="https://hunhepan.com/favicon-32x32.png" alt="网盘俱乐部" onError={handleImgError} />
+          <NavIcon id="hunhepan" name="网盘俱乐部" iconSrc="https://hunhepan.com/favicon-32x32.png" />
           <a data="https://pan.club/">网盘俱乐部</a>
         </li>
 
@@ -443,7 +541,7 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           id="cupfox"
           onClick={(e) => handleItemClick('cupfox', 'https://ssgo.app/', '云盘搜索', false, e)}
         >
-          <img src="/images/cupfox.png" alt="云盘搜索" onError={handleImgError} />
+          <NavIcon id="cupfox" name="云盘搜索" />
           <a data="https://ssgo.app/">云盘搜索</a>
         </li>
 
@@ -451,7 +549,7 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           id="jiumodiary"
           onClick={(e) => handleItemClick('jiumodiary', 'https://www.jiumodiary.com/', '电子书', false, e)}
         >
-          <img src="/images/jiumodiary.png" alt="电子书" onError={handleImgError} />
+          <NavIcon id="jiumodiary" name="电子书" />
           <a data="https://www.jiumodiary.com/">电子书</a>
         </li>
 
@@ -459,7 +557,7 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           id="soman"
           onClick={(e) => handleItemClick('soman', 'https://ai.animedb.cn/', '以图识番', false, e)}
         >
-          <img src="/images/soman.ico" alt="以图识番" onError={handleImgError} />
+          <NavIcon id="soman" name="以图识番" />
           <a data="https://ai.animedb.cn/">以图识番</a>
         </li>
 
@@ -467,7 +565,7 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           id="future"
           onClick={(e) => handleItemClick('future', 'https://bks.thefuture.top/', 'TheFuture', false, e)}
         >
-          <img src="/images/future.ico" alt="TheFuture" onError={handleImgError} />
+          <NavIcon id="future" name="TheFuture" />
           <a data="https://bks.thefuture.top/">TheFuture</a>
         </li>
 
@@ -475,7 +573,7 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           id="capub"
           onClick={(e) => handleItemClick('capub', 'https://pdc.capub.cn/', '出版物数据', true, e)}
         >
-          <img src="/images/capub.ico" alt="出版物数据" onError={handleImgError} />
+          <NavIcon id="capub" name="出版物数据" />
           <a data="https://pdc.capub.cn/" target="_blank" rel="noreferrer">
             出版物数据
           </a>
@@ -485,7 +583,7 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           id="shidianguji"
           onClick={(e) => handleItemClick('shidianguji', 'https://www.shidianguji.com/', '识典古籍', false, e)}
         >
-          <img src="/images/shidianguji.svg" alt="识典古籍" onError={handleImgError} />
+          <NavIcon id="shidianguji" name="识典古籍" />
           <a data="https://www.shidianguji.com/">识典古籍</a>
         </li>
 
@@ -493,7 +591,7 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           id="zdic"
           onClick={(e) => handleItemClick('zdic', 'https://www.zdic.net/', '汉典', false, e)}
         >
-          <img src="/images/zdic.ico" alt="汉典" onError={handleImgError} />
+          <NavIcon id="zdic" name="汉典" />
           <a data="https://www.zdic.net/">汉典</a>
         </li>
 
@@ -501,23 +599,23 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           id="iptv"
           onClick={(e) => handleItemClick('iptv', 'https://iptv-org.github.io/', 'IPTV 直播源', false, e)}
         >
-          <img src="/images/IPTV.png" alt="IPTV 直播源" onError={handleImgError} />
+          <NavIcon id="iptv" name="IPTV 直播源" />
           <a data="https://iptv-org.github.io/">IPTV 直播源</a>
         </li>
 
         <li
           id="law"
-          onClick={(e) => handleItemClick('law', 'https://search.chongbuluo.com/law.html', '法律法规', false, e)}
+          onClick={(e) => handleItemClick('law', 'https://flk.npc.gov.cn/', '法律法规', false, e)}
         >
-          <img src="/images/law.ico" alt="法律法规" onError={handleImgError} />
-          <a data="https://search.chongbuluo.com/law.html">法律法规</a>
+          <NavIcon id="law" name="法律法规" />
+          <a data="https://flk.npc.gov.cn/">法律法规</a>
         </li>
 
         <li
           id="qichacha"
           onClick={(e) => handleItemClick('qichacha', 'https://www.tianyancha.com/', '查企业', false, e)}
         >
-          <img src="/images/qichacha.png" alt="查企业" onError={handleImgError} />
+          <NavIcon id="qichacha" name="查企业" />
           <a data="https://www.tianyancha.com/">查企业</a>
         </li>
 
@@ -525,24 +623,24 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           id="similarsites"
           onClick={(e) => handleItemClick('similarsites', 'https://cn.similarsites.com/', 'SimilarSites', false, e)}
         >
-          <img src="/images/similarsites.png" alt="SimilarSites" onError={handleImgError} />
+          <NavIcon id="similarsites" name="SimilarSites" />
           <a data="https://cn.similarsites.com/">SimilarSites</a>
         </li>
 
         <li
           id="github"
           className={activeEngineId === 'github' ? 'active' : ''}
-          onClick={(e) => handleItemClick('github', 'https://search.chongbuluo.com/github.html', 'GitHub', false, e)}
+          onClick={(e) => handleItemClick('github', 'https://github.com/explore', 'GitHub', false, e)}
         >
-          <img src="/images/github.ico" alt="GitHub" onError={handleImgError} />
-          <a data="https://search.chongbuluo.com/github.html">GitHub</a>
+          <NavIcon id="github" name="GitHub" />
+          <a data="https://github.com/explore">GitHub</a>
         </li>
 
         <li
           id="open"
           onClick={(e) => handleItemClick('open', 'https://www.openhub.net/', '开源代码', false, e)}
         >
-          <img src="/images/kaiyuan.ico" alt="开源代码" onError={handleImgError} />
+          <NavIcon id="open" name="开源代码" />
           <a data="https://www.openhub.net/">开源代码</a>
         </li>
 
@@ -550,23 +648,23 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           id="wolf"
           onClick={(e) => handleItemClick('wolf', 'https://www.wolframalpha.com/', 'Wolfram Alpha', false, e)}
         >
-          <img src="/images/wolframalpha.ico" alt="Wolfram Alpha" onError={handleImgError} />
+          <NavIcon id="wolf" name="Wolfram Alpha" />
           <a data="https://www.wolframalpha.com/">Wolfram Alpha</a>
         </li>
 
         <li
           id="index"
-          onClick={(e) => handleItemClick('index', 'https://search.chongbuluo.com/index-search/index.html', '索引搜索', false, e)}
+          onClick={(e) => handleItemClick('index', 'https://www.google.com/search?q=%s', '索引搜索', false, e)}
         >
-          <img src="/images/google.ico" alt="索引搜索" onError={handleImgError} />
-          <a data="https://search.chongbuluo.com/index-search/index.html">索引搜索</a>
+          <NavIcon id="index" name="索引搜索" iconSrc="./images/google.ico" />
+          <a data="https://www.google.com/search?q=%s">索引搜索</a>
         </li>
 
         <li
           id="kuaidi"
           onClick={(e) => handleItemClick('kuaidi', 'https://www.kuaidi100.com/', '快递', false, e)}
         >
-          <img src="/images/kuaidi.ico" alt="快递" onError={handleImgError} />
+          <NavIcon id="kuaidi" name="快递" />
           <a data="https://www.kuaidi100.com/">快递</a>
         </li>
 
@@ -574,24 +672,24 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           id="gepu"
           onClick={(e) => handleItemClick('gepu', 'https://www.zhaogepu.com/', '找歌谱', false, e)}
         >
-          <img src="/images/zhaogepu.ico" alt="找歌谱" onError={handleImgError} />
+          <NavIcon id="gepu" name="找歌谱" />
           <a data="https://www.zhaogepu.com/">找歌谱</a>
         </li>
 
         <li
           id="bilibili"
           className={activeEngineId === 'bilibili' ? 'active' : ''}
-          onClick={(e) => handleItemClick('bilibili', 'https://search.chongbuluo.com/bilibili.html', '哔哩哔哩', false, e)}
+          onClick={(e) => handleItemClick('bilibili', 'https://www.bilibili.com/', '哔哩哔哩', false, e)}
         >
-          <img src="/images/bilibili.ico" alt="哔哩哔哩" onError={handleImgError} />
-          <a data="https://search.chongbuluo.com/bilibili.html">哔哩哔哩</a>
+          <NavIcon id="bilibili" name="哔哩哔哩" />
+          <a data="https://www.bilibili.com/">哔哩哔哩</a>
         </li>
 
         <li
           id="emoji"
           onClick={(e) => handleItemClick('emoji', 'https://searchemoji.app/zh-hans', 'SearchEmoji', false, e)}
         >
-          <img src="/images/searchemoji.png" alt="SearchEmoji" onError={handleImgError} />
+          <NavIcon id="emoji" name="SearchEmoji" />
           <a data="https://searchemoji.app/zh-hans">SearchEmoji</a>
         </li>
 
@@ -599,7 +697,7 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           id="vectorlogo"
           onClick={(e) => handleItemClick('vectorlogo', 'https://worldvectorlogo.com/', '矢量 logo', false, e)}
         >
-          <img src="/images/vectorlogo.ico" alt="矢量 logo" onError={handleImgError} />
+          <NavIcon id="vectorlogo" name="矢量 logo" />
           <a data="https://worldvectorlogo.com/">矢量 logo</a>
         </li>
 
@@ -607,7 +705,7 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           id="font"
           onClick={(e) => handleItemClick('font', 'https://www.likefont.com/', '字体识别', false, e)}
         >
-          <img src="/images/qiuziti.ico" alt="字体识别" onError={handleImgError} />
+          <NavIcon id="font" name="字体识别" />
           <a data="https://www.likefont.com/">字体识别</a>
         </li>
 
@@ -615,7 +713,7 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           id="visualhunt"
           onClick={(e) => handleItemClick('visualhunt', 'https://visualhunt.com/', 'Visual Hunt', false, e)}
         >
-          <img src="/images/visualhunt.ico" alt="Visual Hunt" onError={handleImgError} />
+          <NavIcon id="visualhunt" name="Visual Hunt" />
           <a data="https://visualhunt.com/">Visual Hunt</a>
         </li>
 
@@ -623,7 +721,7 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           id="mba"
           onClick={(e) => handleItemClick('mba', 'https://www.mbalib.com/', 'MBA智库', false, e)}
         >
-          <img src="/images/mbalib.ico" alt="MBA智库" onError={handleImgError} />
+          <NavIcon id="mba" name="MBA智库" />
           <a data="https://www.mbalib.com/">MBA智库</a>
         </li>
 
@@ -631,7 +729,7 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           id="makedie"
           onClick={(e) => handleItemClick('makedie', 'https://secure.assrt.net/', '字幕反向搜索', false, e)}
         >
-          <img src="/images/zimu.ico" alt="字幕反向搜索" onError={handleImgError} />
+          <NavIcon id="makedie" name="字幕反向搜索" />
           <a data="https://secure.assrt.net/">字幕反向搜索</a>
         </li>
 
@@ -639,7 +737,7 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           id="plantplus"
           onClick={(e) => handleItemClick('plantplus', 'https://www.plantplus.cn/', '植物物种', false, e)}
         >
-          <img src="https://www.plantplus.cn/cn/images/favicon.ico" alt="植物物种" onError={handleImgError} />
+          <NavIcon id="plantplus" name="植物物种" iconSrc="https://www.plantplus.cn/cn/images/favicon.ico" />
           <a data="https://www.plantplus.cn/">植物物种</a>
         </li>
 
@@ -647,7 +745,7 @@ export const LeftNav: React.FC<LeftNavProps> = ({
           id="innojoy"
           onClick={(e) => handleItemClick('innojoy', 'https://www.innojoy.com/search/index.shtml', '专利检索', false, e)}
         >
-          <img src="/images/patMain.ico" alt="专利检索" onError={handleImgError} />
+          <NavIcon id="innojoy" name="专利检索" />
           <a data="https://www.innojoy.com/search/index.shtml">专利检索</a>
         </li>
       </ul>

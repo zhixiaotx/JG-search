@@ -62,7 +62,7 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
 
           {/* First <a>: Two lines of text (Title + Slogan) */}
-          <a href="/" className="flex items-center gap-2.5 group shrink-0">
+          <a href="./" className="flex items-center gap-2.5 group shrink-0">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform shrink-0">
               <Sparkles className="w-5 h-5" />
             </div>
