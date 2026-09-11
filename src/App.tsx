@@ -387,18 +387,6 @@ export default function App() {
         favoritesCount={favoriteEngines.length}
       />
 
-      {/* Floating trigger button when sidebar is collapsed */}
-      {!sidebarOpen && (
-        <button
-          onClick={() => setSidebarOpen(true)}
-          className="fixed left-0 top-20 z-30 flex items-center gap-1.5 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-r-xl shadow-lg shadow-blue-500/20 text-xs font-semibold transition-all hover:pr-4"
-          title="展开快搜侧边栏导航"
-        >
-          <PanelLeft className="w-4 h-4" />
-          <span>快搜导航</span>
-        </button>
-      )}
-
       {/* Main Viewport below header */}
       <div className="flex-1 w-full flex overflow-hidden">
         {/* Left Category & Navigation Sidebar */}
@@ -422,6 +410,19 @@ export default function App() {
           <div className="shrink-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 px-3 sm:px-4 py-2 flex items-center justify-between gap-2.5 z-10 shadow-xs">
             {/* Left: Active Engine Tag & Quick Category Engine Switcher */}
             <div className="relative flex items-center gap-1.5 py-0.5 min-w-0 max-w-xs sm:max-w-md md:max-w-xl lg:max-w-2xl shrink-0">
+              {/* Expand Sidebar Button inside Toolbar when collapsed */}
+              {!sidebarOpen && (
+                <button
+                  type="button"
+                  onClick={() => setSidebarOpen(true)}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition cursor-pointer shrink-0"
+                  title="展开快搜侧边栏导航"
+                >
+                  <PanelLeft className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline whitespace-nowrap">展开侧栏</span>
+                </button>
+              )}
+
               {/* Active Engine Badge with Dropdown Trigger */}
               <button
                 type="button"
